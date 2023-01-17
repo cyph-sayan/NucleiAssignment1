@@ -27,11 +27,11 @@ abstract class Subscription{
         }  
     }
     public enum maxConView{
-        prime(3), platinum(8), premium(5);
+        prime(3), premium(5), platinum(8);
         private final int value;
-        maxConView(final int s)
+        maxConView(final int n)
         {
-            value=s;
+            value=n;
         }
         public int getValue()
         {
@@ -39,13 +39,25 @@ abstract class Subscription{
         }  
     }
     public enum priceslab{
-        prime(999), platinum(1499), premium(1299);
+        prime(999), premium(1299), platinum(1499);
         private final int value;
-        priceslab(final int s)
+        priceslab(final int n)
         {
-            value=s;
+            value=n;
         }
         public int getValue()
+        {
+            return value;
+        }  
+    }
+    public enum taxslab{
+        prime(0.0875), premium(0.1425), platinum(0.175);
+        private final double value;
+        taxslab(final Double n)
+        {
+            value=n;
+        }
+        public double getValue()
         {
             return value;
         }  
@@ -53,24 +65,24 @@ abstract class Subscription{
     protected String resolution;
     protected String planName;
     protected int maximumConcurrentViewers;
-    protected double amount;
-    protected String dis;
+    protected double subscriptionFee;
+    protected String discountEligibilty;
     abstract void calculate();
     @Override
     public String toString(){
-      return String.format("%s%nPlane Name:%s%nNo. Of Concurrent Viewers:%d%nSupported Resolution:%s%nTotal Amount Payable:%.2f",dis,planName,maximumConcurrentViewers,resolution,amount);  
+      return String.format("%s%nPlane Name:%s%nNo. Of Concurrent Viewers:%d%nSupported Resolution:%s%nTotal Amount Payable:%.2f",discountEligibilty,planName,maximumConcurrentViewers,resolution,subscriptionFee);  
     } 
     double getTotalAmount()
     {
-        return amount;
+        return subscriptionFee;
     }
     void setTotalAmount(double newAmount)
     {
-        this.amount=newAmount;
+        this.subscriptionFee=newAmount;
     }
     void setEligibleForDiscount(String eligible)
     {
-        this.dis=eligible;
+        this.discountEligibilty=eligible;
     }
 }
 class Prime extends Subscription{
@@ -79,8 +91,8 @@ class Prime extends Subscription{
         this.planName=namesOfPlans.prime.getValue();
         this.maximumConcurrentViewers=maxConView.prime.getValue();
         this.resolution=supportedResolution.prime.getValue();
-        this.amount=priceslab.prime.getValue();
-        this.amount+=(0.0875*this.amount);
+        this.subscriptionFee=priceslab.prime.getValue();
+        this.subscriptionFee+=(taxslab.prime.getValue()*this.subscriptionFee);
     }
 }
 class Premium extends Subscription{
@@ -89,8 +101,8 @@ class Premium extends Subscription{
         this.planName=namesOfPlans.premium.toString();
         this.maximumConcurrentViewers=maxConView.premium.getValue();
         this.resolution=supportedResolution.premium.toString();
-        this.amount=priceslab.premium.getValue();
-        this.amount+=(0.1425*this.amount);
+        this.subscriptionFee=priceslab.premium.getValue();
+        this.subscriptionFee+=(taxslab.premium.getValue()*this.subscriptionFee);
     }
 }
 class Platinum extends Subscription{
@@ -99,8 +111,8 @@ class Platinum extends Subscription{
         this.planName=namesOfPlans.platinum.getValue();
         this.maximumConcurrentViewers=maxConView.platinum.getValue();
         this.resolution=supportedResolution.platinum.getValue();
-        this.amount=priceslab.platinum.getValue();
-        this.amount+=(0.175*this.amount);
+        this.subscriptionFee=priceslab.platinum.getValue();
+        this.subscriptionFee+=(taxslab.platinum.getValue()*this.subscriptionFee);
     }
 }
 class Factory{
