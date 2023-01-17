@@ -1,23 +1,65 @@
-import java.text.DecimalFormat;
 import java.util.Scanner;
 import java.util.HashMap;
-import java.util.Map;;
+import java.util.Map;
 abstract class Subscription{
+    public enum namesOfPlans{
+        prime("PRIME"), premium("PREMIUM"), platinum("PLATINUM");
+        private final String stringvalue;
+        namesOfPlans(final String s)
+        {
+            stringvalue=s;
+        }
+        public String getValue()
+        {
+            return stringvalue;
+        }  
+    }
+    public enum supportedResolution{
+        prime("720p"), premium("1080p"), platinum("4k");
+        private final String stringvalue;
+        supportedResolution(final String s)
+        {
+            stringvalue=s;
+        }
+        public String getValue()
+        {
+            return stringvalue;
+        }  
+    }
+    public enum maxConView{
+        prime(3), platinum(8), premium(5);
+        private final int value;
+        maxConView(final int s)
+        {
+            value=s;
+        }
+        public int getValue()
+        {
+            return value;
+        }  
+    }
+    public enum priceslab{
+        prime(999), platinum(1499), premium(1299);
+        private final int value;
+        priceslab(final int s)
+        {
+            value=s;
+        }
+        public int getValue()
+        {
+            return value;
+        }  
+    }
     protected String resolution;
     protected String planName;
-    protected int noOfViewers;
+    protected int maximumConcurrentViewers;
     protected double amount;
     protected String dis;
     abstract void calculate();
-    void display()
-    {
-        DecimalFormat df=new DecimalFormat("##.00");
-        System.out.println(dis);
-        System.out.println("Plane Name:"+planName);
-        System.out.println("No. Of Concurrent Viewers:"+noOfViewers);
-        System.out.println("Supported Resolution:"+resolution);
-        System.out.println("Total Amount:"+df.format(amount));
-    }
+    @Override
+    public String toString(){
+      return String.format("%s%nPlane Name:%s%nNo. Of Concurrent Viewers:%d%nSupported Resolution:%s%nTotal Amount Payable:%.2f",dis,planName,maximumConcurrentViewers,resolution,amount);  
+    } 
     double getTotalAmount()
     {
         return amount;
@@ -34,30 +76,30 @@ abstract class Subscription{
 class Prime extends Subscription{
     @Override
     public void calculate(){
-        this.planName="Prime";
-        this.noOfViewers=3;
-        this.resolution="720p";
-        this.amount=999;
+        this.planName=namesOfPlans.prime.getValue();
+        this.maximumConcurrentViewers=maxConView.prime.getValue();
+        this.resolution=supportedResolution.prime.getValue();
+        this.amount=priceslab.prime.getValue();
         this.amount+=(0.0875*this.amount);
     }
 }
 class Premium extends Subscription{
     @Override
     public void calculate() {
-        this.planName="Premium";
-        this.noOfViewers=5;
-        this.resolution="1080p";
-        this.amount=1299;
+        this.planName=namesOfPlans.premium.toString();
+        this.maximumConcurrentViewers=maxConView.premium.getValue();
+        this.resolution=supportedResolution.premium.toString();
+        this.amount=priceslab.premium.getValue();
         this.amount+=(0.1425*this.amount);
     }
 }
 class Platinum extends Subscription{
     @Override
     public void calculate() {
-        this.planName="Platinum";
-        this.noOfViewers=10;
-        this.resolution="4k";
-        this.amount=1499;
+        this.planName=namesOfPlans.platinum.getValue();
+        this.maximumConcurrentViewers=maxConView.platinum.getValue();
+        this.resolution=supportedResolution.platinum.getValue();
+        this.amount=priceslab.platinum.getValue();
         this.amount+=(0.175*this.amount);
     }
 }
@@ -139,7 +181,7 @@ public class ottplan {
             {
                 obj.setEligibleForDiscount("Not Eligible For Discount");
             }
-            obj.display();
+            System.out.println(obj.toString()); 
         }
         catch(NullPointerException e) {
             System.out.println("Invalid Plan Entered");
