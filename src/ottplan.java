@@ -8,7 +8,7 @@ abstract class Subscription{
     protected int noOfViewers;
     protected double amount;
     protected String dis;
-    abstract void calculate(boolean a);
+    abstract void calculate();
     void display()
     {
         DecimalFormat df=new DecimalFormat("##.00");
@@ -18,57 +18,47 @@ abstract class Subscription{
         System.out.println("Supported Resolution:"+resolution);
         System.out.println("Total Amount:"+df.format(amount));
     }
-    public double getTotalAmount()
+    double getTotalAmount()
     {
         return amount;
+    }
+    void setTotalAmount(double newAmount)
+    {
+        this.amount=newAmount;
+    }
+    void setEligibleForDiscount(String eligible)
+    {
+        this.dis=eligible;
     }
 }
 class Prime extends Subscription{
     @Override
-    public void calculate(boolean discount){
+    public void calculate(){
         this.planName="Prime";
         this.noOfViewers=3;
         this.resolution="720p";
         this.amount=999;
         this.amount+=(0.0875*this.amount);
-        if(discount){
-            this.dis="Eligible for Discount";
-            this.amount-=100;
-        }
-        else
-            this.dis="Not Eligible for Discount";
     }
 }
 class Premium extends Subscription{
     @Override
-    public void calculate(boolean discount) {
+    public void calculate() {
         this.planName="Premium";
         this.noOfViewers=5;
         this.resolution="1080p";
         this.amount=1299;
         this.amount+=(0.1425*this.amount);
-        if(discount){
-            this.dis="Eligible for Discount";
-            this.amount-=100;
-        }
-        else
-            this.dis="Not Eligible for Discount";
     }
 }
 class Platinum extends Subscription{
     @Override
-    public void calculate(boolean discount) {
+    public void calculate() {
         this.planName="Platinum";
         this.noOfViewers=10;
         this.resolution="4k";
         this.amount=1499;
         this.amount+=(0.175*this.amount);
-        if(discount){
-            this.dis="Eligible for Discount";
-            this.amount-=100;
-        }
-        else
-            this.dis="Not Eligible for Discount";
     }
 }
 class Factory{
@@ -136,15 +126,20 @@ public class ottplan {
         System.out.println("Enter Your Name");
         String name=sc.nextLine();
         System.out.println("Enter Your Plan");
-        String plan=sc.nextLine();
-        Boolean isDiscount=false;
-        if(ob.hasDiscount(name))
-            isDiscount=true;
+        String plan=sc.nextLine();      
         try{
             Subscription obj=Factory.getPlan(plan);
-            obj.calculate(isDiscount);
+            obj.calculate();
+            if(ob.hasDiscount(name))
+            {
+                obj.setTotalAmount(obj.getTotalAmount()-100);
+                obj.setEligibleForDiscount("Eligible For Discount");
+            }
+            else
+            {
+                obj.setEligibleForDiscount("Not Eligible For Discount");
+            }
             obj.display();
-            System.out.println("Amount Before Discount:"+obj.getTotalAmount());
         }
         catch(NullPointerException e) {
             System.out.println("Invalid Plan Entered");
