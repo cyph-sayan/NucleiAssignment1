@@ -1,3 +1,8 @@
 out/
-src/Factory.class
 .idea/
+src/Factory.class
+src/Premium.class
+src/Subscription.class
+src/ottplan.class
+src/Platinum.class
+src/Prime.class
