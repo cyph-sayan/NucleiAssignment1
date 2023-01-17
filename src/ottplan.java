@@ -1,5 +1,7 @@
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Scanner;
+import java.util.HashMap;
+import java.util.Map;;
 abstract class Subscription{
     protected String resolution;
     protected String planName;
@@ -15,6 +17,10 @@ abstract class Subscription{
         System.out.println("No. Of Concurrent Viewers:"+noOfViewers);
         System.out.println("Supported Resolution:"+resolution);
         System.out.println("Total Amount:"+df.format(amount));
+    }
+    public double getTotalAmount()
+    {
+        return amount;
     }
 }
 class Prime extends Subscription{
@@ -77,47 +83,52 @@ class Factory{
         return planMap.get(operator.toLowerCase());
     }
 }
-public class ottplan {
-    boolean notConsecutive(String name)
+class discountEligible{
+    boolean hasConsecutiveCharacters(String name)
     {
         for(int i=1;i<name.length();i++)
         {
             if(name.charAt(i)==name.charAt(i-1))
-                return false;
+                return true;
         }
-        return true;
+        return false;
     }
-    boolean distinctVowels(String name)
+    boolean hasTwoDistinctVowels(String name)
     {
-        int[] hash =new int[5];
-        Arrays.fill(hash,0);
+        Map<Character,Integer> vowelMap=new HashMap<Character,Integer>();
         for(int i=0;i<name.length();i++)
         {
             char ch=name.charAt(i);
-            if(ch=='a' || ch=='A')
-                hash[0]++;
-            if(ch=='e' || ch=='E')
-                hash[1]++;
-            if(ch=='i' || ch=='I')
-                hash[2]++;
-            if(ch=='o' || ch=='O')
-                hash[3]++;
-            if(ch=='u' || ch=='U')
-                hash[4]++;
+            if(ch=='a' || ch=='e' || ch=='i' || ch=='o' || ch=='u')
+            {
+                if(vowelMap.containsKey(ch)){
+                    vowelMap.put(ch,vowelMap.get(ch)+1);
+                }
+                else{
+                    vowelMap.put(ch,1);
+                }
+            }
         }
-        int distinct=0;
-        for (int i=0;i<5;i++)
+        if(vowelMap.size()>=2)
         {
-            if(hash[i]>=1)
-                distinct++;
+            return true;
         }
-        return distinct>=2?true:false;
+        return false;
     }
     boolean isConsonant(char ch)
     {
-        if(ch=='a'||ch=='A'||ch=='e'||ch=='E'||ch=='i'||ch=='I'||ch=='o'||ch=='O'||ch=='u'||ch=='U')
+        if(ch=='a'|| ch=='e'||ch=='i'||ch=='o'||ch=='u')
             return false;
         return true;
+    }
+
+}
+public class ottplan {
+    boolean hasDiscount(String name)
+    {
+        name=name.toLowerCase();
+        discountEligible dis=new discountEligible();
+        return (dis.isConsonant(name.charAt(0)) && dis.hasTwoDistinctVowels(name) && !dis.hasConsecutiveCharacters(name) && name.length()<=10);
     }
     public static void main(String[] args) {
         Scanner sc=new Scanner(System.in);
@@ -127,15 +138,17 @@ public class ottplan {
         System.out.println("Enter Your Plan");
         String plan=sc.nextLine();
         Boolean isDiscount=false;
-        if(ob.isConsonant(name.charAt(0)) && ob.distinctVowels(name) && ob.notConsecutive(name) && name.length()<=10)
+        if(ob.hasDiscount(name))
             isDiscount=true;
         try{
             Subscription obj=Factory.getPlan(plan);
             obj.calculate(isDiscount);
             obj.display();
+            System.out.println("Amount Before Discount:"+obj.getTotalAmount());
         }
         catch(NullPointerException e) {
             System.out.println("Invalid Plan Entered");
         }
+        sc.close();
     }
 }
