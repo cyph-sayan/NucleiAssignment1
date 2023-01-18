@@ -73,7 +73,7 @@ class Factory{
     static {
         planMap.put(Plan.PRIME.name(),new Prime(3,999,0.0875));
         planMap.put(Plan.PREMIUM.name(),new Premium(5,1299,0.1425));
-        planMap.put(Plan.PREMIUM.name(),new Platinum(10,1499,0.175));
+        planMap.put(Plan.PLATINUM.name(),new Platinum(10,1499,0.175));
     }
     public static Subscription getPlan(String planName)
     {
@@ -152,7 +152,7 @@ public class ottplan {
             {
                 double newAmount=obj.getTotalAmount()-100;
                 System.out.println("Eligible For Discount");
-                System.out.printf("New Payable Amount:%.2f",newAmount);
+                System.out.printf("New Payable Amount:%.2f%n",newAmount);
             }
         }
         catch(NullPointerException e) {
