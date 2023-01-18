@@ -1,133 +1,90 @@
 import java.util.Scanner;
+import java.util.Set;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-abstract class Subscription{
-    public enum namesOfPlans{
-        prime("PRIME"), premium("PREMIUM"), platinum("PLATINUM");
-        private final String stringvalue;
-        namesOfPlans(final String s)
-        {
-            stringvalue=s;
-        }
-        public String getValue()
-        {
-            return stringvalue;
-        }  
+enum Plan{
+    PRIME("720p"),
+    PREMIUM("1080p"),
+    PLATINUM("4k");
+    public String resolution;
+    Plan(String resolution)
+    {
+        this.resolution=resolution;
     }
-    public enum supportedResolution{
-        prime("720p"), premium("1080p"), platinum("4k");
-        private final String stringvalue;
-        supportedResolution(final String s)
-        {
-            stringvalue=s;
-        }
-        public String getValue()
-        {
-            return stringvalue;
-        }  
-    }
-    public enum maxConView{
-        prime(3), premium(5), platinum(8);
-        private final int value;
-        maxConView(final int n)
-        {
-            value=n;
-        }
-        public int getValue()
-        {
-            return value;
-        }  
-    }
-    public enum priceslab{
-        prime(999), premium(1299), platinum(1499);
-        private final int value;
-        priceslab(final int n)
-        {
-            value=n;
-        }
-        public int getValue()
-        {
-            return value;
-        }  
-    }
-    public enum taxslab{
-        prime(0.0875), premium(0.1425), platinum(0.175);
-        private final double value;
-        taxslab(final Double n)
-        {
-            value=n;
-        }
-        public double getValue()
-        {
-            return value;
-        }  
-    }
+}
+class Subscription{
     protected String resolution;
     protected String planName;
     protected int maximumConcurrentViewers;
-    protected double subscriptionFee;
-    protected String discountEligibilty;
-    abstract void calculate();
+    protected double baseFee;
+    protected double taxslab;
+    protected double totalAmountPayable;
     @Override
     public String toString(){
-      return String.format("%s%nPlane Name:%s%nNo. Of Concurrent Viewers:%d%nSupported Resolution:%s%nTotal Amount Payable:%.2f",discountEligibilty,planName,maximumConcurrentViewers,resolution,subscriptionFee);  
+      return String.format("Plane Name:%s%nNo. Of Concurrent Viewers:%d%nSupported Resolution:%s%nTotal Amount Payable:%.2f",planName,maximumConcurrentViewers,resolution,totalAmountPayable);  
     } 
-    double getTotalAmount()
+    public void setTotalAmount()
     {
-        return subscriptionFee;
+        this.totalAmountPayable=this.baseFee+this.baseFee*this.taxslab;
     }
-    void setTotalAmount(double newAmount)
+    public double getTotalAmount()
     {
-        this.subscriptionFee=newAmount;
+        return this.totalAmountPayable;
     }
-    void setEligibleForDiscount(String eligible)
-    {
-        this.discountEligibilty=eligible;
-    }
+
 }
 class Prime extends Subscription{
-    @Override
-    public void calculate(){
-        this.planName=namesOfPlans.prime.getValue();
-        this.maximumConcurrentViewers=maxConView.prime.getValue();
-        this.resolution=supportedResolution.prime.getValue();
-        this.subscriptionFee=priceslab.prime.getValue();
-        this.subscriptionFee+=(taxslab.prime.getValue()*this.subscriptionFee);
+    
+    Prime(int maximumConcurrentViewers, double baseFee, double taxslab)
+    {
+        this.planName=Plan.PRIME.name();
+        this.maximumConcurrentViewers=maximumConcurrentViewers;
+        this.resolution=Plan.PRIME.resolution;
+        this.baseFee=baseFee;
+        this.taxslab=taxslab;
+        setTotalAmount();
     }
 }
 class Premium extends Subscription{
-    @Override
-    public void calculate() {
-        this.planName=namesOfPlans.premium.toString();
-        this.maximumConcurrentViewers=maxConView.premium.getValue();
-        this.resolution=supportedResolution.premium.toString();
-        this.subscriptionFee=priceslab.premium.getValue();
-        this.subscriptionFee+=(taxslab.premium.getValue()*this.subscriptionFee);
+    Premium(int maximumConcurrentViewers, double baseFee, double taxslab)
+    {
+        this.planName=Plan.PREMIUM.name();
+        this.maximumConcurrentViewers=maximumConcurrentViewers;
+        this.resolution=Plan.PREMIUM.resolution;
+        this.baseFee=baseFee;
+        this.taxslab=taxslab;
+        setTotalAmount();
     }
 }
 class Platinum extends Subscription{
-    @Override
-    public void calculate() {
-        this.planName=namesOfPlans.platinum.getValue();
-        this.maximumConcurrentViewers=maxConView.platinum.getValue();
-        this.resolution=supportedResolution.platinum.getValue();
-        this.subscriptionFee=priceslab.platinum.getValue();
-        this.subscriptionFee+=(taxslab.platinum.getValue()*this.subscriptionFee);
+    Platinum(int maximumConcurrentViewers, double baseFee, double taxslab)
+    {
+        this.planName=Plan.PLATINUM.name();
+        this.maximumConcurrentViewers=maximumConcurrentViewers;
+        this.resolution=Plan.PLATINUM.resolution;
+        this.baseFee=baseFee;
+        this.taxslab=taxslab;
+        setTotalAmount();
     }
 }
 class Factory{
     static Map<String,Subscription> planMap=new HashMap<>();
     static {
-        planMap.put("prime",new Prime());
-        planMap.put("premium",new Premium());
-        planMap.put("platinum",new Platinum());
+        planMap.put(Plan.PRIME.name(),new Prime(3,999,0.0875));
+        planMap.put(Plan.PREMIUM.name(),new Premium(5,1299,0.1425));
+        planMap.put(Plan.PREMIUM.name(),new Platinum(10,1499,0.175));
     }
     public static Subscription getPlan(String operator)
     {
-        return planMap.get(operator.toLowerCase());
+        return planMap.get(operator.toUpperCase());
     }
 }
 class discountEligible{
+   
+
+}
+public class ottplan {
     boolean hasConsecutiveCharacters(String name)
     {
         for(int i=1;i<name.length();i++)
@@ -137,13 +94,23 @@ class discountEligible{
         }
         return false;
     }
+    boolean isVowel(char ch)
+    {
+        Set<Character> vowelSet=new HashSet<Character>();
+        vowelSet.add('a');
+        vowelSet.add('e');
+        vowelSet.add('i');
+        vowelSet.add('o');
+        vowelSet.add('u');
+        return vowelSet.contains(ch); 
+    }
     boolean hasTwoDistinctVowels(String name)
     {
         Map<Character,Integer> vowelMap=new HashMap<Character,Integer>();
         for(int i=0;i<name.length();i++)
         {
             char ch=name.charAt(i);
-            if(ch=='a' || ch=='e' || ch=='i' || ch=='o' || ch=='u')
+            if(isVowel(ch))
             {
                 if(vowelMap.containsKey(ch)){
                     vowelMap.put(ch,vowelMap.get(ch)+1);
@@ -159,41 +126,34 @@ class discountEligible{
         }
         return false;
     }
-    boolean isConsonant(char ch)
-    {
-        if(ch=='a'|| ch=='e'||ch=='i'||ch=='o'||ch=='u')
-            return false;
-        return true;
-    }
-
-}
-public class ottplan {
     boolean hasDiscount(String name)
     {
         name=name.toLowerCase();
-        discountEligible dis=new discountEligible();
-        return (dis.isConsonant(name.charAt(0)) && dis.hasTwoDistinctVowels(name) && !dis.hasConsecutiveCharacters(name) && name.length()<=10);
+        return (!isVowel(name.charAt(0)) && hasTwoDistinctVowels(name) && !hasConsecutiveCharacters(name) && name.length()<=10);
     }
     public static void main(String[] args) {
         Scanner sc=new Scanner(System.in);
         ottplan ob=new ottplan();
-        System.out.println("Enter Your Name");
-        String name=sc.nextLine();
-        System.out.println("Enter Your Plan");
-        String plan=sc.nextLine();      
+        String name="", plan="";
+        while(name.length()==0)
+        {
+            System.out.println("Enter Your Name");
+            name=sc.nextLine();
+        }
+        while(plan.length()==0)
+        {
+            System.out.println("Enter Your Plan");
+            plan=sc.nextLine();  
+        }    
         try{
             Subscription obj=Factory.getPlan(plan);
-            obj.calculate();
+            System.out.println(obj.toString()); 
             if(ob.hasDiscount(name))
             {
-                obj.setTotalAmount(obj.getTotalAmount()-100);
-                obj.setEligibleForDiscount("Eligible For Discount");
+                double newAmount=obj.getTotalAmount()-100;
+                System.out.println("Eligible For Discount");
+                System.out.printf("New Payable Amount:%.2f",newAmount);
             }
-            else
-            {
-                obj.setEligibleForDiscount("Not Eligible For Discount");
-            }
-            System.out.println(obj.toString()); 
         }
         catch(NullPointerException e) {
             System.out.println("Invalid Plan Entered");
