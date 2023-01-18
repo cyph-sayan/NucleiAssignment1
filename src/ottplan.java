@@ -75,9 +75,9 @@ class Factory{
         planMap.put(Plan.PREMIUM.name(),new Premium(5,1299,0.1425));
         planMap.put(Plan.PREMIUM.name(),new Platinum(10,1499,0.175));
     }
-    public static Subscription getPlan(String operator)
+    public static Subscription getPlan(String planName)
     {
-        return planMap.get(operator.toUpperCase());
+        return planMap.get(planName.toUpperCase());
     }
 }
 class discountEligible{
