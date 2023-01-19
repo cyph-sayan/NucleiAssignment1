@@ -80,10 +80,6 @@ class Factory{
         return planMap.get(planName.toUpperCase());
     }
 }
-class discountEligible{
-   
-
-}
 public class ottplan {
     boolean hasConsecutiveCharacters(String name)
     {
