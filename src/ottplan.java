@@ -14,15 +14,14 @@ enum Plan{
     }
 }
 class Subscription{
-    protected String resolution;
-    protected String planName;
+    Plan plan;
     protected int maximumConcurrentViewers;
     protected double baseFee;
     protected double taxslab;
     protected double totalAmountPayable;
     @Override
     public String toString(){
-      return String.format("Plane Name:%s%nNo. Of Concurrent Viewers:%d%nSupported Resolution:%s%nTotal Amount Payable:%.2f",planName,maximumConcurrentViewers,resolution,totalAmountPayable);  
+      return String.format("Plane Name:%s%nNo. Of Concurrent Viewers:%d%nSupported Resolution:%s%nTotal Amount Payable:%.2f",plan.name(),maximumConcurrentViewers,plan.resolution,totalAmountPayable);  
     } 
     public void setTotalAmount()
     {
@@ -38,9 +37,8 @@ class Prime extends Subscription{
     
     Prime(int maximumConcurrentViewers, double baseFee, double taxslab)
     {
-        this.planName=Plan.PRIME.name();
+        this.plan=Plan.PRIME;
         this.maximumConcurrentViewers=maximumConcurrentViewers;
-        this.resolution=Plan.PRIME.resolution;
         this.baseFee=baseFee;
         this.taxslab=taxslab;
         setTotalAmount();
@@ -49,9 +47,8 @@ class Prime extends Subscription{
 class Premium extends Subscription{
     Premium(int maximumConcurrentViewers, double baseFee, double taxslab)
     {
-        this.planName=Plan.PREMIUM.name();
+        this.plan=Plan.PREMIUM;
         this.maximumConcurrentViewers=maximumConcurrentViewers;
-        this.resolution=Plan.PREMIUM.resolution;
         this.baseFee=baseFee;
         this.taxslab=taxslab;
         setTotalAmount();
@@ -60,9 +57,8 @@ class Premium extends Subscription{
 class Platinum extends Subscription{
     Platinum(int maximumConcurrentViewers, double baseFee, double taxslab)
     {
-        this.planName=Plan.PLATINUM.name();
+        this.plan=Plan.PLATINUM;
         this.maximumConcurrentViewers=maximumConcurrentViewers;
-        this.resolution=Plan.PLATINUM.resolution;
         this.baseFee=baseFee;
         this.taxslab=taxslab;
         setTotalAmount();
@@ -77,7 +73,11 @@ class Factory{
     }
     public static Subscription getPlan(String planName)
     {
-        return planMap.get(planName.toUpperCase());
+        if(planMap.containsKey(planName.toUpperCase()))
+        {
+             return planMap.get(planName.toUpperCase());
+        }
+        return null;
     }
 }
 public class ottplan {
@@ -90,7 +90,7 @@ public class ottplan {
         }
         return false;
     }
-    boolean isVowel(char ch)
+    boolean isVowel(Character ch)
     {
         Set<Character> vowelSet=new HashSet<Character>();
         vowelSet.add('a');
@@ -98,7 +98,7 @@ public class ottplan {
         vowelSet.add('i');
         vowelSet.add('o');
         vowelSet.add('u');
-        return vowelSet.contains(ch); 
+        return vowelSet.contains(Character.toLowerCase(ch)); 
     }
     boolean hasTwoDistinctVowels(String name)
     {
@@ -127,6 +127,20 @@ public class ottplan {
         name=name.toLowerCase();
         return (!isVowel(name.charAt(0)) && hasTwoDistinctVowels(name) && !hasConsecutiveCharacters(name) && name.length()<=10);
     }
+    public Subscription getPlanObject(String plan){
+        return Factory.getPlan(plan);
+    }
+    public void printDetails(Subscription ob)
+    {
+        System.out.println(ob.toString()); 
+    }
+    public void printNewAmountDetails(Subscription ob)
+    {
+        double discount=Math.min(100,0.13*ob.getTotalAmount());
+        double newAmount=ob.getTotalAmount()-discount;    
+        System.out.println("Eligible For Discount");
+        System.out.printf("New Payable Amount:%.2f%n",newAmount); 
+    }
     public static void main(String[] args) {
         Scanner sc=new Scanner(System.in);
         ottplan ob=new ottplan();
@@ -135,20 +149,23 @@ public class ottplan {
         {
             System.out.println("Enter Your Name");
             name=sc.nextLine();
+            if(name.length()==0)
+            System.out.println("Please Enter Non Empty String");
         }
         while(plan.length()==0)
         {
             System.out.println("Enter Your Plan");
             plan=sc.nextLine();  
+            if(plan.length()==0)
+            System.out.println("Please Enter Non Empty String");
         }    
         try{
-            Subscription obj=Factory.getPlan(plan);
-            System.out.println(obj.toString()); 
+            Subscription obj=ob.getPlanObject(plan);
+            ob.printDetails(obj);
             if(ob.hasDiscount(name))
             {
-                double newAmount=obj.getTotalAmount()-100;
-                System.out.println("Eligible For Discount");
-                System.out.printf("New Payable Amount:%.2f%n",newAmount);
+                ob.printNewAmountDetails(obj);
+              
             }
         }
         catch(NullPointerException e) {
