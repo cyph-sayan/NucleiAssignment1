@@ -127,19 +127,14 @@ public class ottplan {
         name=name.toLowerCase();
         return (!isVowel(name.charAt(0)) && hasTwoDistinctVowels(name) && !hasConsecutiveCharacters(name) && name.length()<=10);
     }
-    public Subscription getPlanObject(String plan){
-        return Factory.getPlan(plan);
-    }
     public void printDetails(Subscription ob)
     {
         System.out.println(ob.toString()); 
     }
-    public void printNewAmountDetails(Subscription ob)
+    public double getNewAmount(Subscription ob)
     {
         double discount=Math.min(100,0.13*ob.getTotalAmount());
-        double newAmount=ob.getTotalAmount()-discount;    
-        System.out.println("Eligible For Discount");
-        System.out.printf("New Payable Amount:%.2f%n",newAmount); 
+        return ob.getTotalAmount()-discount;    
     }
     public static void main(String[] args) {
         Scanner sc=new Scanner(System.in);
@@ -160,12 +155,13 @@ public class ottplan {
             System.out.println("Please Enter Non Empty String");
         }    
         try{
-            Subscription obj=ob.getPlanObject(plan);
+            Subscription obj=Factory.getPlan(plan);
             ob.printDetails(obj);
             if(ob.hasDiscount(name))
             {
-                ob.printNewAmountDetails(obj);
-              
+                double newAmount=ob.getNewAmount(obj);
+                System.out.println("Eligible For Discount");
+                System.out.printf("New Payable Amount:%.2f%n",newAmount); 
             }
         }
         catch(NullPointerException e) {
